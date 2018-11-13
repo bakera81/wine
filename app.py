@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 app = Flask(__name__)
 
 def split_pairs(x):
@@ -84,8 +84,8 @@ def home():
     punctuation = ['.', '!', '?']
     reviews = []
 
-    # Generate 10 reviews
-    for i in range(10):
+    # Generate a few reviews
+    for i in range(5):
         prev_word = '_START'
         review = ''
         keep_speaking = True
@@ -108,6 +108,4 @@ def home():
 
         reviews.append(review)
 
-    return jsonify({
-        'reviews': reviews
-    })
+    return render_template('index.html', reviews=reviews)
