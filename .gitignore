@@ -1,6 +1,7 @@
 .ipynb_checkpoints
 data/
 __pycache__/
-.icloud
+**.icloud
 secret.yml
 
+.Rproj.user

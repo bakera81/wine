@@ -13,9 +13,7 @@ def split_pairs(x):
         output.append(tuple(x[i:i+2]))
     return output
 
-
-def build_model():
-    print('Rebuilding the model.')
+def fetch_wines():
     print('Reading some reviews...')
     reviews = pd.read_csv('data/winemag-data-130k-v2.csv')
     wines = reviews[['title','description']]
@@ -30,15 +28,29 @@ def build_model():
     # Clean descriptions - remove multiple punctuation
     wines = wines.assign(clean_desc=wines.clean_desc.str.replace('\.{3}', '…'))
     # TODO: Clean descriptions - remove white spaces around commas and other punctuation
-
     wines = wines.assign(words=wines.clean_desc.str.split(pat=' '))
+    return wines
 
+def fetch_titles():
+    print('Reading some reviews...')
+    reviews = pd.read_csv('data/winemag-data-130k-v2.csv')
+    titles = reviews[['title']]
+
+    # Clean titles - remove everything in parentheses
+    titles = titles.assign(clean_title=titles.title.str.replace('\(.*\)', ''))
+    titles = titles.assign(clean_title=titles.clean_title.str.strip())
+    titles = titles.assign(words=titles.clean_title.str.split(pat=' '))
+    return titles
+
+
+def build_model(df):
+    """Takes a DataFrame with a 'words' column"""
+    print('Rebuilding the model.')
     print('Unnesting data...')
-    # Unnest pairs of words
-    wines = wines.assign(
-        pairs=wines.apply(lambda row: split_pairs(row.words), axis=1)
+    df = df.assign(
+        pairs=df.apply(lambda row: split_pairs(row.words), axis=1)
     )
-    words = wines['pairs'].apply(pd.Series).stack().to_frame(name='pairs')
+    words = df['pairs'].apply(pd.Series).stack().to_frame(name='pairs')
 
     punctuation = ['.', '?', '!']
     words = words.assign(
@@ -70,12 +82,26 @@ def build_model():
 
 
 def update_model():
-    wordcounts = build_model()
+    wines = fetch_wines()
+    wordcounts = build_model(wines)
     wordcounts.to_csv('data/wordcounts.csv', index=False)
+
+
+def update_title_model():
+    titles = fetch_titles()
+    wordcounts = build_model(titles)
+    wordcounts.to_csv('data/title_wordcounts.csv', index=False)
+
 
 def read_model():
     wordcounts = pd.read_csv('data/wordcounts.csv')
     return wordcounts
+
+
+def read_title_model():
+    wordcounts = pd.read_csv('data/title_wordcounts.csv')
+    return wordcounts
+
 
 def write_review():
     wordcounts = read_model()
@@ -102,6 +128,27 @@ def write_review():
             keep_speaking = False
 
     return ' '.join(review)
+
+
+def write_title():
+    wordcounts = read_title_model()
+    prev_word = '_START'
+    title = []
+
+    for i in range(6):
+        prev_word = wordcounts[wordcounts.word_1 == prev_word] \
+            .sample(1, weights=wordcounts.weight) \
+            .iloc[0, 1]
+        title.append(prev_word)
+
+    # Cut the title short if it contains 2 dates
+    date_locs = [re.match('^\d+$', t) is not None for t in title]
+    if date_locs.count(True) > 1:
+        date_locs.reverse()
+        index = date_locs.index(True)
+        title = title[:-1 * (index + 1)]
+    return ' '.join(title)
+
 
 
 def tweet(cred_path='secret.yml'):
