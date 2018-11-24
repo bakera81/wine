@@ -3,5 +3,5 @@ data/
 __pycache__/
 **.icloud
 secret.yml
-
+.DS_Store
 .Rproj.user

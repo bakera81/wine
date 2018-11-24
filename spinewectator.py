@@ -3,6 +3,7 @@ import re
 import tweepy
 import yaml
 
+PUNCTUATION = ['.', '!', '?']
 
 def split_pairs(x):
     """Split a list into a list of 2-tuples."""
@@ -164,8 +165,18 @@ def tweet(cred_path='secret.yml'):
 
     api = tweepy.API(auth)
 
+    title = write_title()
     review = write_review()
 
-    response = api.update_status(review)
+    tweet = '{0}:\n\n{1}'.format(title, review)
+    # If the tweet is too long, crop it
+    if len(tweet) > 280:
+        print('Tweet is too long, cropping...')
+        sentences = tweet.split('. ')
+        sentences.pop()
+        tweet = '. '.join(sentences) + '.'
+    print('Tweeting: ')
+    print(tweet)
+    response = api.update_status(tweet)
 
     return response
