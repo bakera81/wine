@@ -1,6 +1,7 @@
 .ipynb_checkpoints
 data/
 __pycache__/
+wine_env/
 **.icloud
 secret.yml
 .DS_Store
