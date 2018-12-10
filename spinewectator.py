@@ -154,6 +154,7 @@ def write_title():
 
 def tweet(cred_path='secret.yml'):
     # Read credentials file
+    print('Authorizing...')
     with open(cred_path, 'r') as stream:
         try:
             creds = yaml.load(stream)
@@ -165,6 +166,7 @@ def tweet(cred_path='secret.yml'):
 
     api = tweepy.API(auth)
 
+    print('Writing review...')
     title = write_title()
     review = write_review()
 
