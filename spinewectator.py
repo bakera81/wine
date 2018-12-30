@@ -170,9 +170,9 @@ def tweet(cred_path='secret.yml'):
     title = write_title()
     review = write_review()
 
-    tweet = '{0}:\n\n{1}'.format(title, review)
+    tweet = '{0}:\n{1}'.format(title, review)
     # If the tweet is too long, crop it
-    if len(tweet) > 280:
+    while len(tweet) > 280:
         print('Tweet is too long, cropping...')
         sentences = tweet.split('. ')
         sentences.pop()
