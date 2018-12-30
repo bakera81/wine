@@ -6,5 +6,5 @@ app = Flask(__name__)
 
 
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(tweet, 'interval', hours=8)
+job = scheduler.add_job(tweet, 'interval', hours=4)
 scheduler.start()
