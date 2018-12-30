@@ -5,3 +5,5 @@ wine_env/
 secret.yml
 .DS_Store
 .Rproj.user
+tmp/
+passenger_wsgi.py*

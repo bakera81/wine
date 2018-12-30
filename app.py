@@ -6,5 +6,9 @@ app = Flask(__name__)
 
 
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(tweet, 'interval', hours=4)
+job = scheduler.add_job(tweet, 'interval', hours=2)
 scheduler.start()
+
+@app.route('/health')
+def health():
+    return 'Hallo! (2)'
