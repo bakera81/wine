@@ -11,4 +11,4 @@ scheduler.start()
 
 @app.route('/health')
 def health():
-    return 'Hallo! (2)'
+    return 'Everything looks good from here.'
